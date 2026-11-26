@@ -1,0 +1,11 @@
+max_null_fraction: 0.1
+columns:
+  order_id:
+    required: true
+    unique: true
+  quantity:
+    type: number
+    minimum: 1
+    maximum: 100
+  status:
+    allowed: [paid, pending]

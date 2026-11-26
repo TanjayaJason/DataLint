@@ -1,55 +1,88 @@
 # DataLint
 
-> A clear, reproducible health check for tabular data.
+### Know your data before you trust it.
 
-Before analysis, teams need to find missing values, duplicates, suspicious types, inconsistent categories, and likely quality issues without trusting an opaque AI verdict.
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+![Status](https://img.shields.io/badge/status-initial_implementation-orange)
+![Validation](https://img.shields.io/badge/runtime-not_tested-lightgrey)
 
-## Why this project
+An offline CSV quality inspector with stable rule IDs, configurable expectations, and record-level evidence. Reports explain what to review while leaving source data untouched.
 
-Analysts, students, and developers preparing CSV or Parquet datasets.
+> **Portfolio release:** initial implementation. Runtime, dependencies, and model behavior have not been tested. The commands below describe intended usage, not verified results.
 
-DataLint is a portfolio project focused on a narrow, demonstrable workflow: useful AI assistance with visible evidence, predictable limits, and a clear local-first story.
+## What you can explore
 
-## Product snapshot
+| Capability | Implementation |
+|---|---|
+| DL001–DL005 | Duplicates, missing values, constants, mixed types, case/whitespace variants |
+| DL006–DL008 | Required fields, uniqueness, and numeric expectations |
+| DL009–DL011 | Numeric ranges, allowed categories, and missing configured columns |
+| Evidence | Counts and up to five record numbers; no raw cell values in reports |
+| Automation | JSON output and optional exit code 2 for error findings |
 
-- **Input:** CSV file and optional YAML configuration for expectations and thresholds.
-- **Output:** Profile summary, findings with severity and affected rows, reproducible rule IDs, and a report.
-- **MVP:** Inspect a local CSV, infer column types, run configurable deterministic quality checks, and produce a concise Markdown/JSON report with examples and suggested fixes.
+## How it fits together
 
-## Planned architecture
+```mermaid
+flowchart LR
+    A[CSV and optional YAML] --> B[Validate shape and limits]
+    B --> C[Profile columns]
+    C --> D[Deterministic quality rules]
+    D --> E[Markdown or JSON report]
+```
 
-Read input in bounded/chunked mode and never modify it. A profiler infers schema and basic distributions. A registry of pure checks evaluates nulls, duplicates, constant columns, suspicious mixed types, category whitespace/casing, and configured expectations. Findings have stable IDs, severity, evidence counts, and limited examples. Render JSON for automation and Markdown for humans.
+## Quick start
 
-## Current status
+Use Python 3.11 or newer. Run from the repository root. Git is also required for CodeTrail.
 
-**Planning scaffold.** The product requirements, design, project skill, and agent guidance are in place. Application implementation has not started.
+```powershell
+git clone https://github.com/TanjayaJason/DataLint.git
+cd DataLint
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e .
+Copy-Item .env.example .env
+```
 
-## Getting started
+Skip the copy if `.env` already exists. On macOS/Linux, activate with `source .venv/bin/activate` and copy with `cp .env.example .env`.
 
-The MVP is planned for Python 3.11+. Clone this repository and review the product and design docs before implementation. Runtime setup instructions will be added with the first working release.
+```powershell
+datalint examples/orders.csv
+datalint examples/orders.csv --config examples/expectations.yaml --json
+datalint examples/orders.csv --config examples/expectations.yaml --fail-on-error
+```
 
-For local LLM configuration, copy the variable names from .env and add your own values. .env is intentionally ignored by Git; never commit API keys.
+## Configuration
 
-## Roadmap
+No LLM or API key is required. Edit `examples/expectations.yaml` to define required and unique columns, numeric ranges, allowed values, and a missing-value threshold. The `.env.example` reserves names for a possible future explainer; the current inspector never calls a model.
 
-1. Implement the smallest end-to-end MVP described in the PRD.
-2. Add representative fixtures and quality checks.
-3. Document setup, limitations, and a short demo.
-4. Revisit optional integrations only when they solve a demonstrated need.
+## Limits you should know
 
-## Safety and privacy
+UTF-8 comma-separated CSV only; 10 MB, 100,000 data records, and 500 columns. Rows are held in memory within those limits. Record numbers exclude the header and differ from physical lines for quoted multiline fields. Numeric inference is heuristic and can misclassify identifiers. Missing values mean empty or whitespace-only cells; strings such as NA remain text. Parquet and automatic fixes are outside this release.
 
-Large files, sensitive data, misleading type inference, expensive profiling, and accidental mutation of source files.
+User input is treated as evidence, never executable instructions. Model output remains advisory. Keep private documents, logs, datasets, repositories, and generated reports out of Git; `data/`, `reports/`, and `.env` are ignored.
 
-The design defaults to local processing where practical and minimizes what is sent to external model providers. Do not use real sensitive data in examples or screenshots.
+## Repository guide
 
-## Project documents
+```text
+src/datalint/
+  core.py          Domain logic and evidence handling
+  cli.py           Command-line entry point
+  support.py       Bounded input and optional provider boundary
+docs/
+  PRD.md           Product scope and acceptance goals
+  DESIGN.md        Architecture and implementation decisions
+  STATUS.md        Delivery and validation status
+.agents/skills/datalint/SKILL.md
+AGENTS.md          Guidance for future coding work
+.env.example       Empty configuration template
+```
 
-- [Product requirements](docs/PRD.md)
-- [Technical design](docs/DESIGN.md)
-- [Project skill](.agents/skills/datalint/SKILL.md)
-- [Agent guidance](AGENTS.md)
+## Where this goes next
 
-## License
+- Add large-file streaming profiles.
+- Add Parquet as a separate input adapter.
+- Consider optional AI explanations only after deterministic findings are established.
 
-License not selected yet.
+## Project notes
+
+Read the [PRD](docs/PRD.md), [design](docs/DESIGN.md), and [delivery status](docs/STATUS.md) for scope and tradeoffs. This release intentionally has no evaluation results or benchmark claims. A license has not been selected; no broad reuse rights are implied.

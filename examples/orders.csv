@@ -1,0 +1,6 @@
+order_id,quantity,status,region
+ORD-01,2,paid,West
+ORD-02,,pending,west
+ORD-02,,pending,west
+ORD-03,many,unknown, West
+ORD-04,150,paid,West

@@ -53,3 +53,9 @@ Keep evaluation fixtures synthetic or public-domain. Track quality separately fr
 3. Add optional model synthesis with bounded context and schema validation.
 4. Add fixtures and evaluation measurements.
 5. Write setup and demo instructions after the workflow is usable.
+
+## 10. Initial implementation decisions
+
+Python csv replaces the proposed dataframe dependency for this bounded CSV-only slice. PyYAML and Pydantic validate expectations. Rules are deterministic and there are no model calls, so an API key is unnecessary. Type expectations support finite numbers and text (text accepts every nonempty CSV cell); range checks apply only to numeric cells.
+
+See [STATUS.md](STATUS.md) for validation status.
