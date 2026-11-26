@@ -1,19 +1,26 @@
 # Delivery status — DataLint
 
-Initial implementation of the core workflow, CLI, packaging, and documentation is present.
+## Offline validation — 2026-11-26
 
-Python csv replaces the proposed dataframe dependency for this bounded CSV-only slice. PyYAML and Pydantic validate expectations. Rules are deterministic and there are no model calls, so an API key is unnecessary. Type expectations support finite numbers and text (text accepts every nonempty CSV cell); range checks apply only to numeric cells.
+- **10 tests passed**, zero failures or errors.
+- Platform: Windows, Python 3.11.9.
+- Editable installation and `python -m pip check` passed.
+- Installed CLI `--help` and the documented local example passed.
+- Automated tests block external connections; PageProof allows loopback for Windows asyncio. No live LLM call was made.
 
-## Validation
+## Coverage
 
-- Source reviewed statically during implementation.
-- No application runs, dependency installation, automated tests, or model requests performed, per the owner's request.
-- No measured accuracy, latency, benchmark, or production-readiness claims.
-- Dependency ranges are declared but not locked; compatibility remains unverified.
-- `.env` exists locally with empty values and is excluded from version control.
+All 11 quality rules, clean and malformed CSV, configuration validation, multiline record numbering, report privacy, source immutability, deterministic output, CLI JSON/exit codes, and bounded input reading.
 
-## Remaining acceptance work
+## Installed versions
 
-Run the documented examples, validate outputs on representative fixtures, and measure the quality criteria in the PRD before marking the MVP accepted. These are future tasks, not completed checks.
+- typer: 0.29.2
+- pydantic: 2.14.4
+- pytest: 9.2.0
+- PyYAML: 6.0.4
 
-Static Python AST and TOML parsing passed without importing or running project code. Runtime behavior remains unverified.
+## Practical limits
+
+Live provider compatibility, model accuracy, latency, and cost remain unverified. Test results cover synthetic local inputs on this environment; they do not establish production readiness, exhaustive format coverage, or cross-platform compatibility. Dependency ranges remain unlocked.
+
+The implemented scope and deferred features are recorded in [DESIGN.md](DESIGN.md). `.env` remains local, empty, and ignored by Git.
